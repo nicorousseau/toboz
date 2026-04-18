@@ -1,6 +1,7 @@
 {
   "name": "toboz",
   "version": "1.0.0",
+  "homepage": "https://nicorousseau.github.io/toboz",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
