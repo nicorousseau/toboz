@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "expo export -p web",
+    "build:web": "expo export -p web && sed -i '' 's|href=\"/|href=\"/toboz/|g; s|src=\"/|src=\"/toboz/|g' dist/index.html",
     "serve:web": "npx serve dist",
     "predeploy": "npm run build:web",
     "deploy": "gh-pages -d dist"
