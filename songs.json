@@ -1,0 +1,20 @@
+[
+  {
+    "id": "song_example_1",
+    "title": "Example Song 1",
+    "artist": "Artist Name",
+    "content": "[C]Verse line/n[F]Second line\n\n[G]Chorus part",
+    "duration": 120,
+    "offset": 0,
+    "fontSize": 22
+  },
+  {
+    "id": "song_example_2",
+    "title": "Example Song 2",
+    "artist": "Another Artist",
+    "content": "[Em]First chord/nSome lyrics\n[Am]More chords [G]here",
+    "duration": 180,
+    "offset": 3,
+    "fontSize": 20
+  }
+]
