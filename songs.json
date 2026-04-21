@@ -16,5 +16,15 @@
     "duration": 180,
     "offset": 3,
     "fontSize": 20
+  },
+  {
+    "id": "song_yesterday_beatles",
+    "title": "Yesterday",
+    "artist": "The Beatles",
+    "content": "[F]Verse/n[C]Line of music/n[Dm]With chords\n\n[Bb]Chorus part/n[F]More music/n[C]Following the structure",
+    "duration": 125,
+    "offset": 0,
+    "fontSize": 22
   }
 ]
+
