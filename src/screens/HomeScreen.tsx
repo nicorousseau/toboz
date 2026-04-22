@@ -17,7 +17,34 @@ export function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    if (isFocused) refresh();
+    // Load and merge songs from songs.json on startup
+    const initSongs = async () => {
+      try {
+        const response = await fetch(
+          typeof window !== 'undefined' && (window as any).__dirname
+            ? '/songs.json'
+            : '/toboz/songs.json'
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            const existing = await loadSongs();
+            const existingIds = new Set(existing.map((s) => s.id));
+            
+            // Add any new songs from songs.json that don't already exist
+            const newSongs = data.filter((song: Song) => !existingIds.has(song.id));
+            if (newSongs.length > 0) {
+              const { saveSongs } = await import('../utils/storage');
+              await saveSongs([...newSongs, ...existing]);
+            }
+          }
+        }
+      } catch {
+        // Silently fail if songs.json doesn't exist or can't be loaded
+      }
+      refresh();
+    };
+    if (isFocused) initSongs();
   }, [isFocused, refresh]);
 
   return (
@@ -78,60 +105,70 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    paddingBottom: 12,
-    borderBottomColor: 'rgba(255,255,255,0.12)',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 12,
+    paddingBottom: 16,
+    borderBottomColor: 'rgba(255,215,0,0.15)',
+    borderBottomWidth: 2,
+    marginBottom: 20,
   },
   title: {
     color: '#FFD700',
-    fontSize: 42,
-    fontWeight: '700',
-    letterSpacing: 1,
+    fontSize: 48,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textShadowColor: 'rgba(255,215,0,0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     color: '#FFF',
     fontSize: 16,
-    opacity: 0.9,
+    opacity: 0.85,
     textAlign: 'center',
+    lineHeight: 24,
   },
   headerButtons: {
-    marginTop: 12,
+    marginTop: 14,
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
   },
   button: {
-    borderRadius: 10,
-    borderColor: 'rgba(255,255,255,0.22)',
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderColor: 'rgba(255,255,255,0.25)',
+    borderWidth: 1.5,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255,255,255,0.02)',
   },
   buttonPrimary: {
     borderColor: '#FFD700',
+    backgroundColor: 'rgba(255,215,0,0.08)',
   },
   buttonText: {
     color: '#FFF',
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 14,
   },
   songRow: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderColor: 'rgba(255,255,255,0.10)',
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderColor: 'rgba(255,255,255,0.12)',
     borderWidth: 1,
-    marginBottom: 10,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    marginBottom: 12,
+    backgroundColor: 'rgba(255,255,255,0.04)',
   },
   songTitle: {
     color: '#FFF',
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
   songArtist: {
-    marginTop: 2,
-    color: '#FFF',
-    opacity: 0.7,
+    marginTop: 4,
+    color: '#FFD700',
+    opacity: 0.75,
+    fontSize: 13,
+    fontWeight: '600',
   },
   emptyList: {
     flexGrow: 1,

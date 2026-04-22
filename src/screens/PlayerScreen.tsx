@@ -83,7 +83,7 @@ export function PlayerScreen() {
   const maxScroll = Math.max(0, contentHeight - viewportHeight);
   const duration = Math.max(1, song?.duration ?? 1);
   const offset = Math.max(0, song?.offset ?? 0);
-  const baseSpeedPxPerSec = maxScroll / Math.max(1, duration - offset);
+  const baseSpeedPxPerSec = (maxScroll / Math.max(1, duration - offset)) * 1.4;
   const speedPxPerSec = baseSpeedPxPerSec * speedMultiplier;
 
   const stop = () => {
@@ -186,6 +186,9 @@ export function PlayerScreen() {
   return (
     <View style={styles.container} onLayout={(e) => setViewportHeight(e.nativeEvent.layout.height)}>
       <View style={styles.topBar}>
+        <Pressable style={styles.homeButton} onPress={() => nav.navigate('Home')}>
+          <Text style={styles.homeButtonText}>TOBOZ</Text>
+        </Pressable>
         <Text style={styles.songTitle} numberOfLines={1}>
           {song?.title || 'Sans titre'}
         </Text>
@@ -315,17 +318,6 @@ export function PlayerScreen() {
             <Text style={styles.ctrlText}>Suiv.</Text>
           </Pressable>
         ) : null}
-        <Pressable
-          style={[styles.ctrlBtn, styles.ctrlLock, locked && styles.ctrlLockActive]}
-          onPress={() => {
-            if (locked) return;
-            stop();
-            setLocked(true);
-            setUnlockHoldMs(0);
-          }}
-        >
-          <Text style={styles.ctrlText}>{locked ? 'LOCK' : 'Lock'}</Text>
-        </Pressable>
       </View>
 
       {locked ? (
@@ -367,40 +359,54 @@ const styles = StyleSheet.create({
   },
   topBar: {
     paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 10,
-    borderBottomColor: 'rgba(255,255,255,0.12)',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingTop: 14,
+    paddingBottom: 12,
+    borderBottomColor: 'rgba(255,215,0,0.15)',
+    borderBottomWidth: 1.5,
+  },
+  homeButton: {
+    marginBottom: 10,
+  },
+  homeButtonText: {
+    color: '#FFD700',
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   songTitle: {
     color: '#FFD700',
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '900',
+    letterSpacing: 0.3,
+    marginTop: 2,
   },
   songArtist: {
-    marginTop: 2,
+    marginTop: 4,
     color: '#FFF',
-    opacity: 0.75,
+    opacity: 0.8,
+    fontSize: 14,
+    fontWeight: '600',
   },
   speedLabel: {
-    marginTop: 6,
+    marginTop: 8,
     color: '#FFF',
-    opacity: 0.7,
+    opacity: 0.75,
     fontWeight: '700',
     fontSize: 12,
+    letterSpacing: 0.2,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingVertical: 18,
+    paddingVertical: 20,
   },
   lyricLine: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-end',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   cell: {
     flexDirection: 'column',
@@ -408,44 +414,48 @@ const styles = StyleSheet.create({
   },
   chord: {
     color: '#FFD700',
-    fontWeight: '800',
+    fontWeight: '900',
     lineHeight: 18,
+    fontSize: 12,
   },
   lyric: {
     color: '#FFF',
     fontWeight: '700',
-    lineHeight: 28,
+    lineHeight: 30,
   },
   tabLine: {
     color: '#FFF',
     fontFamily: 'Courier',
-    opacity: 0.95,
-    marginBottom: 6,
+    opacity: 0.9,
+    marginBottom: 8,
+    fontSize: 11,
   },
   controls: {
     flexDirection: 'row',
-    gap: 10,
-    padding: 12,
-    borderTopColor: 'rgba(255,255,255,0.12)',
-    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: 8,
+    padding: 14,
+    borderTopColor: 'rgba(255,215,0,0.15)',
+    borderTopWidth: 1.5,
     backgroundColor: '#000',
   },
   ctrlBtn: {
     flex: 1,
     borderRadius: 12,
-    borderColor: 'rgba(255,255,255,0.22)',
-    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+    borderWidth: 1.5,
     paddingVertical: 12,
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.02)',
   },
   ctrlBtnDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   ctrlPrimary: {
     borderColor: '#FFD700',
+    backgroundColor: 'rgba(255,215,0,0.1)',
   },
   ctrlLock: {
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderColor: 'rgba(255,255,255,0.4)',
   },
   ctrlLockActive: {
     borderColor: '#FFD700',
@@ -453,6 +463,7 @@ const styles = StyleSheet.create({
   ctrlText: {
     color: '#FFF',
     fontWeight: '800',
+    fontSize: 12,
   },
   nextHint: {
     position: 'absolute',

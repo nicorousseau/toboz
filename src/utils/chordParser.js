@@ -29,6 +29,7 @@ const TAB_RE = /^(e|B|G|D|A|E)\|/;
 /**
  * Parse a whole ChordPro content string into render-friendly lines.
  * - Keeps line breaks
+ * - Converts literal /n strings to actual newlines
  * - Detects tablature lines (`e|`, `B|`, ...)
  * - Ignores ChordPro directives like `{title: ...}` by treating them as plain text (for now)
  *
@@ -36,7 +37,8 @@ const TAB_RE = /^(e|B|G|D|A|E)\|/;
  * @returns {ParsedChordPro}
  */
 export function parseChordPro(content) {
-  const normalized = String(content ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const withActualNewlines = String(content ?? '').replace(/\\n/g, '\n').replace(/\/n/g, '\n');
+  const normalized = withActualNewlines.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const rawLines = normalized.split('\n');
 
   return {

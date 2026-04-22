@@ -1,0 +1,48 @@
+[
+  {
+    "id": "song_example_1",
+    "title": "Example Song 1",
+    "artist": "Artist Name",
+    "content": "[C]Verse line/n[F]Second line\n\n[G]Chorus part",
+    "duration": 120,
+    "offset": 0,
+    "fontSize": 22
+  },
+  {
+    "id": "song_example_2",
+    "title": "Example Song 2",
+    "artist": "Another Artist",
+    "content": "[Em]First chord/nSome lyrics\n[Am]More chords [G]here",
+    "duration": 180,
+    "offset": 3,
+    "fontSize": 20
+  },
+  {
+    "id": "song_yesterday_beatles",
+    "title": "Yesterday",
+    "artist": "The Beatles",
+    "content": "[F]Verse/n[C]Line of music/n[Dm]With chords\n\n[Bb]Chorus part/n[F]More music/n[C]Following the structure",
+    "duration": 125,
+    "offset": 0,
+    "fontSize": 22
+  },
+  {
+    "id": "song_take_me_out_franz_ferdinand",
+    "title": "Take me out",
+    "artist": "Franz Ferdinand",
+    "content": "[Verse]/n[E]So if you're [Am]lonely [D]/nyou know I'm [G]here [Bm]waiting for [Em]you/n[Am]I'm just a [D]crosshair/nI'm just a [G]shot [Bm]away from [Em]you/n[Am]and if you [D]leave here/nyou leave me [G]broken and [Bm]shattered a[Em]live/n[Am]I'm just a [D]crosshair/nI'm just a [G]shot then [Bm]we can [Em]die\n\n[G] [A] [Em] [G] [A] [Em] Ahhh-ahhh-ahhh\n\n[G]I [D]know I won't be [F]leaving here [C]with [Em]you\n\n[Em](slow down) [Em] [Em] [Am] [Bm] x2\n\n[Chorus]/n[Em]I say don't you know/n[Em]you say you don't know/n[Am]I say... [Bm]take me out/n[Em]I say you don't show/n[Em]don't move time is slow/n[Am]I say... [Bm]take me out\n\n[Em] [Em] [Am] [Bm]\n\n[Em]I say you don't know/n[Em]you say you don't know/n[Am]I say... [Bm]take me out/n[Em]If I move this could die/n[Em]eyes move this can die/n[Am]I want you to [Bm]take me out/n[Em] [Em]\n\n[Bridge]/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here with you\n\n[Em] [Em] [Am] [Bm]\n\n[Chorus]/n[Em]I say don't you know/n[Em]you say you don't know/n[Am]I say... [Bm]take me out/n[Em]I wane this could die/n[Em]I wait this could die/n[Am]I want you to [Bm]take me out/n[Em]If I move this could die/n[Em]eyes move this can die/n[Am]c'mon... [Bm]take me out\n\n[Instrumental]/n[Em] [Em] [Am] [Bm]/n[Em] [Em]\n\n[Bridge]/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here/n[Am]I know I won't be [C]leaving [D]here with you\n\n[Em] [Em] [Em] [Em]",
+    "duration": 237,
+    "offset": 0,
+    "fontSize": 22
+  },
+  {
+    "id": "song_last_nite_the_strokes",
+    "title": "Last Nite",
+    "artist": "The Strokes",
+    "content": "[Intro] [C]\n\n[Verse 1]/n[C]Last night she said/n\"Oh, baby, I [Dm]feel so down/nOh, it [G]turns me off/nWhen I [Em]feel left [Dm]out\"/n[C]So I, I turned around/nOh, baby, [Dm]don't care no more/nI know [G]this for sure/nI'm walking [Em]out that [Dm]door/n[C]Well, I've been in town/nFor just 'bout fifteen minutes now/nOh, baby, I [Dm]feel so down/nAnd I don't [G]know why/nI keep [Em]walking for [Dm]miles\n\n[Chorus]/n[F]But the people they don't under[G]stand/n[F]No, girlfriends, they can't under[G]stand/n[F]Your grandsons, they won't under[G]stand/n[F]On top of this, I ain't ever gonna under[G]stand\n\n[Verse 2]/n[C]Last night she said/n\"Oh, baby, I [Dm]feel so down/nOh, it [G]turns me off/nWhen I [Em]feel left [Dm]out\"/n[C]So I, I turned around/nOh, baby, [Dm]gonna be alright/nIt was a [G]great big lie/nAs I [Em]left that [Dm]night, yeah\n\n[Solo]/n[C] [F] [G]\n\n[Chorus]\n\n[Verse 3]/n[C]Last night she said/n\"Oh, baby, I [Dm]feel so down/nOh, it [G]turns me off/nWhen I [Em]feel left [Dm]out\"/n[C]So I, I turned around/nOh, little girl, I [Dm]don't care no more/nI know [G]this for sure/nI'm walking [Em]out that [Dm]door, yeah\n\n[Outro]/n[C] [F] [G]",
+    "duration": 193,
+    "offset": 0,
+    "fontSize": 22
+  }
+
+]

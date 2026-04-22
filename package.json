@@ -8,10 +8,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "expo export -p web && sed -i '' 's|href=\"/|href=\"/toboz/|g; s|src=\"/|src=\"/toboz/|g' dist/index.html",
-    "serve:web": "npx serve dist",
+    "build:web": "expo export -p web --output-dir build && cp songs.json build/ && sed -i '' 's|href=\"/|href=\"/toboz/|g; s|src=\"/|src=\"/toboz/|g' build/index.html && touch build/.nojekyll",
+    "serve:web": "npx serve build",
     "predeploy": "npm run build:web",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
