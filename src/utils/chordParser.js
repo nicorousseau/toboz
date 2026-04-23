@@ -57,7 +57,7 @@ export function parseChordPro(content) {
  */
 export function parseLine(raw) {
   const line = String(raw ?? '');
-  if (line.length === 0) return { type: 'empty', raw: '' };
+  if (line.trim().length === 0) return { type: 'empty', raw: '' };
   if (TAB_RE.test(line.trim())) return { type: 'tab', raw: line };
 
   const cells = parseChordCells(line);
