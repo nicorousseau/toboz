@@ -31,6 +31,7 @@ export function PlayerScreen() {
   const [unlockHoldMs, setUnlockHoldMs] = useState(0);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [transposeSemitones, setTransposeSemitones] = useState(0);
+  const [settingsSaved, setSettingsSaved] = useState(false);
   const unlockHoldStartRef = useRef<number | null>(null);
   const unlockTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scrollRef = useRef<ScrollView | null>(null);
@@ -96,13 +97,20 @@ export function PlayerScreen() {
         // Silently fail if unable to load
       }
     })();
+    setSettingsSaved(false);
   }, [song?.id]);
 
-  // Save speed multiplier whenever it changes
-  useEffect(() => {
+  const saveSettings = useCallback(async () => {
     if (!song?.id) return;
-    AsyncStorage.setItem(`toboz:speed:${song.id}`, speedMultiplier.toFixed(1));
-  }, [speedMultiplier, song?.id]);
+    try {
+      await AsyncStorage.setItem(`toboz:speed:${song.id}`, speedMultiplier.toFixed(1));
+      setSettingsSaved(true);
+      // Show feedback for 1.5 seconds
+      setTimeout(() => setSettingsSaved(false), 1500);
+    } catch {
+      // Silently fail if unable to save
+    }
+  }, [song?.id, speedMultiplier]);
 
   const parsed = useMemo(() => parseChordPro(song?.content ?? ''), [song?.content]);
 
@@ -330,6 +338,13 @@ export function PlayerScreen() {
         >
           <Text style={styles.ctrlText}>T+</Text>
         </Pressable>
+        <Pressable
+          style={[styles.ctrlBtn, locked && styles.ctrlBtnDisabled, settingsSaved && styles.ctrlBtnSuccess]}
+          onPress={saveSettings}
+          disabled={locked}
+        >
+          <Text style={styles.ctrlText}>{settingsSaved ? '✓' : 'Save'}</Text>
+        </Pressable>
         {concert ? (
           <Pressable
             style={[styles.ctrlBtn, (locked || !hasNext) && styles.ctrlBtnDisabled]}
@@ -485,6 +500,10 @@ const styles = StyleSheet.create({
   },
   ctrlBtnDisabled: {
     opacity: 0.35,
+  },
+  ctrlBtnSuccess: {
+    borderColor: '#4CAF50',
+    backgroundColor: 'rgba(76,175,80,0.2)',
   },
   ctrlPrimary: {
     borderColor: '#FFD700',
