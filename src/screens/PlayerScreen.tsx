@@ -79,25 +79,30 @@ export function PlayerScreen() {
     };
   }, [loadConcert, loadSingle, route.params]);
 
-  // Load speed multiplier from storage on mount
+  // Load speed multiplier from storage when song changes
   useEffect(() => {
+    if (!song?.id) return;
     (async () => {
       try {
-        const saved = await AsyncStorage.getItem('toboz:speedMultiplier');
+        const saved = await AsyncStorage.getItem(`toboz:speed:${song.id}`);
         if (saved) {
           const speed = parseFloat(saved);
           if (!isNaN(speed)) setSpeedMultiplier(speed);
+        } else {
+          // Reset to default if no saved value for this song
+          setSpeedMultiplier(1);
         }
       } catch {
         // Silently fail if unable to load
       }
     })();
-  }, []);
+  }, [song?.id]);
 
   // Save speed multiplier whenever it changes
   useEffect(() => {
-    AsyncStorage.setItem('toboz:speedMultiplier', speedMultiplier.toFixed(1));
-  }, [speedMultiplier]);
+    if (!song?.id) return;
+    AsyncStorage.setItem(`toboz:speed:${song.id}`, speedMultiplier.toFixed(1));
+  }, [speedMultiplier, song?.id]);
 
   const parsed = useMemo(() => parseChordPro(song?.content ?? ''), [song?.content]);
 
