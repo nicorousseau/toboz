@@ -80,18 +80,34 @@ export function PlayerScreen() {
     };
   }, [loadConcert, loadSingle, route.params]);
 
-  // Load speed multiplier from storage when song changes
+  // Load settings (speed, font size, transposition) from storage when song changes
   useEffect(() => {
     if (!song?.id) return;
     (async () => {
       try {
-        const saved = await AsyncStorage.getItem(`toboz:speed:${song.id}`);
-        if (saved) {
-          const speed = parseFloat(saved);
+        const speedSaved = await AsyncStorage.getItem(`toboz:speed:${song.id}`);
+        const fontSizeSaved = await AsyncStorage.getItem(`toboz:fontSize:${song.id}`);
+        const transposeSaved = await AsyncStorage.getItem(`toboz:transpose:${song.id}`);
+        
+        if (speedSaved) {
+          const speed = parseFloat(speedSaved);
           if (!isNaN(speed)) setSpeedMultiplier(speed);
         } else {
-          // Reset to default if no saved value for this song
           setSpeedMultiplier(1);
+        }
+        
+        if (fontSizeSaved) {
+          const size = parseFloat(fontSizeSaved);
+          if (!isNaN(size)) setFontSize(size);
+        } else {
+          setFontSize(22);
+        }
+        
+        if (transposeSaved) {
+          const transpose = parseInt(transposeSaved, 10);
+          if (!isNaN(transpose)) setTransposeSemitones(transpose);
+        } else {
+          setTransposeSemitones(0);
         }
       } catch {
         // Silently fail if unable to load
@@ -104,17 +120,19 @@ export function PlayerScreen() {
     if (!song?.id) return;
     try {
       await AsyncStorage.setItem(`toboz:speed:${song.id}`, speedMultiplier.toFixed(1));
+      await AsyncStorage.setItem(`toboz:fontSize:${song.id}`, fontSize.toString());
+      await AsyncStorage.setItem(`toboz:transpose:${song.id}`, transposeSemitones.toString());
       setSettingsSaved(true);
       // Show feedback for 1.5 seconds
       setTimeout(() => setSettingsSaved(false), 1500);
     } catch {
       // Silently fail if unable to save
     }
-  }, [song?.id, speedMultiplier]);
+  }, [song?.id, speedMultiplier, fontSize, transposeSemitones]);
 
   const parsed = useMemo(() => parseChordPro(song?.content ?? ''), [song?.content]);
 
-  const maxScroll = Math.max(0, contentHeight - viewportHeight);
+  const maxScroll = Math.max(0, contentHeight - viewportHeight + 40);
   const duration = Math.max(1, song?.duration ?? 1);
   const offset = Math.max(0, song?.offset ?? 0);
   const baseSpeedPxPerSec = (maxScroll / Math.max(1, duration - offset)) * 1.4;
