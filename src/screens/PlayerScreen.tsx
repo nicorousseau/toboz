@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -77,6 +78,26 @@ export function PlayerScreen() {
       cancelled = true;
     };
   }, [loadConcert, loadSingle, route.params]);
+
+  // Load speed multiplier from storage on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem('toboz:speedMultiplier');
+        if (saved) {
+          const speed = parseFloat(saved);
+          if (!isNaN(speed)) setSpeedMultiplier(speed);
+        }
+      } catch {
+        // Silently fail if unable to load
+      }
+    })();
+  }, []);
+
+  // Save speed multiplier whenever it changes
+  useEffect(() => {
+    AsyncStorage.setItem('toboz:speedMultiplier', speedMultiplier.toFixed(1));
+  }, [speedMultiplier]);
 
   const parsed = useMemo(() => parseChordPro(song?.content ?? ''), [song?.content]);
 
@@ -186,17 +207,20 @@ export function PlayerScreen() {
   return (
     <View style={styles.container} onLayout={(e) => setViewportHeight(e.nativeEvent.layout.height)}>
       <View style={styles.topBar}>
-        <Pressable style={styles.homeButton} onPress={() => nav.navigate('Home')}>
-          <Text style={styles.homeButtonText}>TOBOZ</Text>
-        </Pressable>
-        <Text style={styles.songTitle} numberOfLines={1}>
-          {song?.title || 'Sans titre'}
-        </Text>
-        <Text style={styles.songArtist} numberOfLines={1}>
-          {song?.artist || ''}
-        </Text>
-        <Text style={styles.speedLabel}>Vitesse x{speedMultiplier.toFixed(1)}</Text>
-        <Text style={styles.speedLabel}>{transposeLabel}</Text>
+        <View style={styles.topBarHeader}>
+          <View style={styles.titleSection}>
+            <Text style={styles.songTitle} numberOfLines={1}>
+              {song?.title || 'Sans titre'}
+            </Text>
+            <Text style={styles.songArtist} numberOfLines={1}>
+              {song?.artist || ''}
+            </Text>
+          </View>
+          <View style={styles.metaSection}>
+            <Text style={styles.speedLabel}>x{speedMultiplier.toFixed(1)}</Text>
+            <Text style={styles.speedLabel}>{transposeLabel.replace('Transpo ', 'T')}</Text>
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -212,40 +236,32 @@ export function PlayerScreen() {
       >
         {parsed.lines.map((line, idx) => {
           if (line.type === 'empty') {
-            return <View key={`l_${idx}`} style={{ height: Math.round(fontSize * 0.9) }} />;
+            return <View key={`l_${idx}`} style={{ height: Math.round(fontSize * 0.5) }} />;
           }
 
           if (line.type === 'tab') {
             return (
-              <Text key={`l_${idx}`} style={[styles.tabLine, { fontSize: Math.max(12, fontSize - 6) }]}>
+              <Text key={`l_${idx}`} style={[styles.tabLine, { fontSize: Math.max(12, fontSize - 6), marginBottom: Math.round(fontSize * 0.4) }]}>
                 {line.raw}
               </Text>
             );
           }
 
+          const dynamicLineHeight = Math.max(26, fontSize * 1.2);
           return (
-            <View key={`l_${idx}`} style={styles.lyricLine}>
+            <View key={`l_${idx}`} style={[styles.lyricLine, { marginBottom: Math.round(fontSize * 0.3) }]}>
               {line.cells.map((cell, cIdx) => (
-                <View key={`c_${idx}_${cIdx}`} style={styles.cell}>
-                  <Text style={[styles.chord, { fontSize: Math.max(12, fontSize - 6) }]}>
+                <View key={`c_${idx}_${cIdx}`} style={[styles.cell, cell.chord && !cell.lyric.trim() && styles.cellWithChord]}>
+                  <Text style={[styles.chord, { fontSize: Math.max(12, fontSize - 6), lineHeight: dynamicLineHeight * 0.6 }]}>
                     {cell.chord ? transposeChord(cell.chord, transposeSemitones) : ' '}
                   </Text>
-                  <Text style={[styles.lyric, { fontSize }]}>{cell.lyric || ' '}</Text>
+                  <Text style={[styles.lyric, { fontSize, lineHeight: dynamicLineHeight }]}>{cell.lyric || ' '}</Text>
                 </View>
               ))}
             </View>
           );
         })}
       </ScrollView>
-
-      {concert && nextTitle ? (
-        <View style={styles.nextHint}>
-          <Text style={styles.nextHintLabel}>Suivant</Text>
-          <Text style={styles.nextHintTitle} numberOfLines={1}>
-            {nextTitle}
-          </Text>
-        </View>
-      ) : null}
 
       <View style={styles.controls}>
         {concert ? (
@@ -359,41 +375,53 @@ const styles = StyleSheet.create({
   },
   topBar: {
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 12,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderBottomColor: 'rgba(255,215,0,0.15)',
     borderBottomWidth: 1.5,
   },
+  topBarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  titleSection: {
+    flex: 1,
+  },
+  metaSection: {
+    flexDirection: 'row',
+    gap: 12,
+    marginLeft: 12,
+  },
   homeButton: {
-    marginBottom: 10,
+    alignSelf: 'flex-start',
   },
   homeButtonText: {
     color: '#FFD700',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
   songTitle: {
     color: '#FFD700',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '900',
     letterSpacing: 0.3,
-    marginTop: 2,
   },
   songArtist: {
-    marginTop: 4,
+    marginTop: 2,
     color: '#FFF',
-    opacity: 0.8,
-    fontSize: 14,
+    opacity: 0.75,
+    fontSize: 12,
     fontWeight: '600',
   },
   speedLabel: {
-    marginTop: 8,
     color: '#FFF',
-    opacity: 0.75,
+    opacity: 0.7,
     fontWeight: '700',
-    fontSize: 12,
-    letterSpacing: 0.2,
+    fontSize: 11,
+    letterSpacing: 0.1,
   },
   scroll: {
     flex: 1,
@@ -405,17 +433,20 @@ const styles = StyleSheet.create({
   lyricLine: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     marginBottom: 8,
   },
   cell: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  cellWithChord: {
+    minWidth: 30,
   },
   chord: {
     color: '#FFD700',
     fontWeight: '900',
-    lineHeight: 18,
     fontSize: 12,
   },
   lyric: {
@@ -464,30 +495,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: '800',
     fontSize: 12,
-  },
-  nextHint: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    bottom: 74,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderColor: 'rgba(255,255,255,0.12)',
-    borderWidth: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
-  },
-  nextHintLabel: {
-    color: '#FFF',
-    opacity: 0.7,
-    fontWeight: '700',
-    fontSize: 12,
-  },
-  nextHintTitle: {
-    marginTop: 2,
-    color: '#FFD700',
-    fontWeight: '900',
-    fontSize: 14,
   },
   lockOverlay: {
     ...StyleSheet.absoluteFillObject,

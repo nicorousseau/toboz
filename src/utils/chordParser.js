@@ -91,6 +91,10 @@ export function parseChordCells(line) {
     if (lyricChunk.length > 0 || pendingChord) {
       cells.push({ chord: pendingChord, lyric: lyricChunk });
       pendingChord = '';
+    } else if (pendingChord) {
+      // If we have a pending chord with no lyric, add a space before the next chord
+      cells.push({ chord: pendingChord, lyric: ' ' });
+      pendingChord = '';
     }
 
     // Chords can be empty or weird; normalize to trimmed string.
@@ -103,8 +107,18 @@ export function parseChordCells(line) {
     cells.push({ chord: pendingChord, lyric: tail });
   }
 
-  // Ensure first cell has a chord only if it actually exists.
-  // (Keeps output clean for lines without chords.)
-  return cells.map((c) => ({ chord: c.chord || '', lyric: c.lyric || '' }));
+  // Add space before capital letters that start a new chord (e.g., "DmCadd9" -> "Dm Cadd9")
+  return cells.map((c, idx) => {
+    const chord = c.chord || '';
+    const lyric = c.lyric || '';
+    
+    // If the lyric starts with a capital letter and it's not just whitespace, 
+    // it might be a chord that got concatenated. Add space.
+    if (lyric && /^[A-G]/.test(lyric) && lyric.trim()) {
+      return { chord, lyric: ' ' + lyric };
+    }
+    
+    return { chord, lyric };
+  });
 }
 
